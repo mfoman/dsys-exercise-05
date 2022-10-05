@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "timeserver/api";
+
+package time;
+
+// The greeting service definition.
+service Greeter {
+  // Sends a greeting
+  rpc SayHello (HelloRequest) returns (HelloReply) {}
+  rpc GetTime (Time) returns (Time) {}
+  rpc GetNTPTime (NTPTime) returns (NTPTime) {}
+  rpc GetRoundTime (RoundTime) returns (RoundTime) {}
+}
+
+message NTPTime {
+  fixed32 settings = 1;
+  fixed32 stratum = 2;
+  int32 poll = 3;
+  int32 precision = 4;
+  int32 rootdelay = 5;
+  int32 rootdispersion = 6;
+  int32 referenceid = 7;
+  int32 reftimesec = 8;
+  int32 reftimefrac = 9;
+  int32 origtimesec = 10;
+  int32 orgtimefrac = 11;
+  int32 rxtimesec = 12;
+  int32 rxtimefrac = 13;
+  int32 txtimesec = 14;
+  int32 txtimefrac = 15;
+}
+
+message RoundTime {
+  google.protobuf.Timestamp t2 = 1;
+  google.protobuf.Timestamp t3 = 2;
+}
+
+message Time {
+  google.protobuf.Timestamp time = 1;
+}
+
+// The request message containing the user's name.
+message HelloRequest {
+  string name = 1;
+}
+
+// The response message containing the greetings
+message HelloReply {
+  string message = 1;
+}
