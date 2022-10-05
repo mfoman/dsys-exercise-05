@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"flag"
+	"fmt"
 	"log"
 
 	api "timeserver/api/v1"
@@ -15,16 +17,21 @@ import (
 var server api.GreeterClient  //the server
 var ServerConn *grpc.ClientConn //the server connection
 
+var name = flag.String("name", "localhost", "Senders name")
+var port = flag.String("port", "8080", "Tcp server")
+
 func main() {
+	flag.Parse()
+
 	var opts []grpc.DialOption
 	opts = append(opts, grpc.WithBlock(), grpc.WithTransportCredentials(insecure.NewCredentials()))
 
 	//use context for timeout on the connection
-	timeContext, cancel := context.WithTimeout(context.Background(), t.Second)
+	timeContext, cancel := context.WithTimeout(context.Background(), t.Second * 5)
 	defer cancel() //cancel the connection when we are done
 
 	//dial the server to get a connection to it
-	conn, err := grpc.DialContext(timeContext, "localhost:8080", opts...)
+	conn, err := grpc.DialContext(timeContext, fmt.Sprintf("%s:%s", *name, *port), opts...)
 
 	if err != nil {
 		log.Printf("Fail to Dial : %v", err)

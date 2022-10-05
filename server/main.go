@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"flag"
+	"fmt"
 	"log"
 	"net"
 	t "time"
@@ -13,6 +15,7 @@ import (
 
 type Server struct {
 	api.UnimplementedGreeterServer
+	port string
 }
 
 func (s *Server) GetTime(ctx context.Context, time *api.Time) (*api.Time, error) {
@@ -32,6 +35,8 @@ func (s *Server) GetTime(ctx context.Context, time *api.Time) (*api.Time, error)
 }
 
 func (s *Server) GetRoundTime(ctx context.Context, time *api.RoundTime) (*api.RoundTime, error) {
+	log.Println("Client invoked GetRoundTime")
+
 	// t2
 	t2now := t.Now()
 	t2ts := timestamppb.New(t2now)
@@ -48,9 +53,14 @@ func (s *Server) GetRoundTime(ctx context.Context, time *api.RoundTime) (*api.Ro
 	return response, nil
 }
 
+var name = flag.String("name", "localhost", "Senders name")
+var port = flag.String("port", "8080", "Tcp server")
+
 func main() {
-	listen, err := net.Listen("tcp", "localhost:8080")
-	log.Println("listen on :8080")
+	flag.Parse()
+
+	listen, err := net.Listen("tcp", fmt.Sprintf("%s:%s", *name, *port))
+	log.Printf("listen on %s:%s\n", *name, *port)
 
 	if err != nil {
 		log.Fatal("woops")
@@ -59,7 +69,9 @@ func main() {
 	var opts []grpc.ServerOption
 	grpcServer := grpc.NewServer(opts...)
 
-	server := &Server{}
+	server := &Server{
+		port: *port,
+	}
 
 	api.RegisterGreeterServer(grpcServer, server)
 
