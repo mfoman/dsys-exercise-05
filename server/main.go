@@ -10,6 +10,7 @@ import (
 	api "timeserver/api/v1"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/peer"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -35,6 +36,9 @@ func (s *Server) GetTime(ctx context.Context, time *api.Time) (*api.Time, error)
 }
 
 func (s *Server) GetRoundTime(ctx context.Context, time *api.RoundTime) (*api.RoundTime, error) {
+	p, _ := peer.FromContext(ctx)
+	log.Println(p.Addr.String())
+
 	log.Println("Client invoked GetRoundTime")
 
 	// t2
